@@ -25,6 +25,6 @@ public class TextLogger implements Logger {
     }
 
     private String formatMessage(LogMessage message) {
-        return String.format("日志等级：%s,信息：%s,时间：%s", message.getLevel(), message.getMessage(), message.getDate());
+        return String.format("%s [%s] %s [%s] [%s]", message.getLevel(),message.getTime(),message.getMessage(),message.getPerformance(),message.getCaller());
     }
 }

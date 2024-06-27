@@ -1,6 +1,6 @@
 package cupk.abner;
 
-//日志记录器接口（工厂模式，策略模式）
+//接口，定义日志记录器的行为
 public interface Logger {
     void log(LogMessage message);
 }

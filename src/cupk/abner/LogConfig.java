@@ -4,7 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-
+//日志配置类，用于读取配置文件
 public class LogConfig {
     private Properties properties = new Properties();
     //读取配置文件
@@ -22,5 +22,10 @@ public class LogConfig {
 
     public String getFilePath() {
         return properties.getProperty("log.filepath"); //获取日志文件路径
+    }
+
+    //获取配置文件中的属性
+    public String getProperty(String key, String defaultValue) {
+        return properties.getProperty(key, defaultValue);
     }
 }

@@ -2,31 +2,49 @@ import cupk.abner.*;
 
 import java.util.Scanner;
 
+import static cupk.abner.Calculator.performOperation;
+
 public class Main {
     //确保日志系统只有一个实例
     private static LogSystem logSystem = LogSystem.getInstance();
 
     public static void main(String[] args) {
         LogConfig config = new LogConfig("config.properties");
+
+        //创建日志对象
         Logger logger = LoggerFactory.getLogger(config.getLogType(), config.getFilePath());
+        //根据配置添加装饰器
+        boolean addPerformance = Boolean.parseBoolean(config.getProperty("log.addPerformance", "false"));
+        boolean addTimestamp = Boolean.parseBoolean(config.getProperty("log.addTimestamp", "false"));
+        boolean addCallerInfo = Boolean.parseBoolean(config.getProperty("log.addCallerInfo", "false"));
+        //添加装饰器
+        logger = LoggerFactory.gerDecoratorLogger(logger, addTimestamp, addCallerInfo,addPerformance);
         logSystem.addLogger(logger);
 
+        //创建xml日志对象
+        Logger xmlLogger = LoggerFactory.getLogger("xml", "log.xml");
+        logSystem.addLogger(xmlLogger);
 
+        Logger jsonLogger = LoggerFactory.getLogger("json", "log.json");
+        logSystem.addLogger(jsonLogger);
+
+        //开始输入
         Scanner scanner = new Scanner(System.in);
-        //在log中添加一行分隔符
-        logSystem.log(LogLevel.INFO, "---------------------------------");
-        logSystem.log(LogLevel.INFO, "启动计算器");
+        //分隔符
+        logSystem.log(LogLevel.INFO, "------------启动计算器----------");
 
         while (true) {
             try {
-                System.out.println("请输入‘+, -, *, /’ 或'退出'：");
+                System.out.println("请输入‘+, -, *, /’ 或'tc'(退出)：");
                 //获取输入的字符
                 String operation = scanner.next();
-                if (operation.equalsIgnoreCase("退出")) {
-                    logSystem.log(LogLevel.INFO, "退出计算器");
+                if (operation.equalsIgnoreCase("tc")) {
+                    logSystem.log(LogLevel.INFO, "----------退出计算器----------");
                     break;
+                } else if (!operation.equals("+") && !operation.equals("-") && !operation.equals("*") && !operation.equals("/")) {
+                        throw new IllegalArgumentException("输入了错误的运算符！");
                 }
-                logSystem.log(LogLevel.DEBUG, "开始运算" + operation);
+                logSystem.log(LogLevel.DEBUG, "开始运算 '" + operation + "'");
 
                 System.out.println("请输入第一个你要计算的数:");
                 double num1 = Double.parseDouble(scanner.next());
@@ -54,24 +72,5 @@ public class Main {
             }
         }
         scanner.close();
-    }
-
-    //四则运算
-    private static double performOperation(String operation, double num1, double num2) {
-        switch (operation) {
-            case "+":
-                return num1 + num2;
-            case "-":
-                return num1 - num2;
-            case "*":
-                return num1 * num2;
-            case "/":
-                if (num2 == 0) {
-                    throw new ArithmeticException("除数不能为 0！");
-                }
-                return num1 / num2;
-            default:
-                throw new IllegalArgumentException("输入了错误的运算符！");
-        }
     }
 }
